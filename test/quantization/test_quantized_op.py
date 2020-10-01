@@ -3048,7 +3048,6 @@ class TestQuantizedConv(TestCase):
             dilations = [1]
         else:
             dilations = (1,) * len(strides)
-
         if transposed:
             W_packed = qconv_prepack_fn(W_q, bias, strides, i_pads, o_pads,
                                         dilations, groups)
@@ -3328,8 +3327,6 @@ class TestQuantizedConv(TestCase):
             Y_scale,
             Y_zero_point,
             use_bias):
-        if not qengine_is_qnnpack():
-            return  # Currently only the QNNPACK is supported
         if qengine_is_qnnpack() and (IS_PPC or TEST_WITH_UBSAN):
             return  # QNNPACK doesn't support these
         assume(o_pad < stride or o_pad < dilation)
@@ -3435,8 +3432,6 @@ class TestQuantizedConv(TestCase):
             Y_scale,
             Y_zero_point,
             use_bias):
-        if not qengine_is_qnnpack():
-            return  # Currently only QNNPACK is supported
         if qengine_is_qnnpack() and (IS_PPC or TEST_WITH_UBSAN):
             return  # QNNPACK doesn't support these
         assume(o_pad_h < stride_h or o_pad_h < dilation)
@@ -3522,8 +3517,6 @@ class TestQuantizedConv(TestCase):
             return
         if qengine == 'qnnpack':
             assume(not channelwise)  # QNNPACK doesn't support channelwise
-        else:
-            assume(not transposed)  # Only QNNPACK supports transposed conv
         if transposed:
             qconv_prepack = torch.ops.quantized.conv_transpose1d_prepack
             qconv_unpack = torch.ops.quantized.conv_transpose1d_unpack
@@ -3562,8 +3555,6 @@ class TestQuantizedConv(TestCase):
             return
         if qengine == 'qnnpack':
             assume(not channelwise)  # QNNPACK doesn't support channelwise
-        else:
-            assume(not transposed)  # Only QNNPACK supports transposed conv
         if transposed:
             qconv_prepack = torch.ops.quantized.conv_transpose2d_prepack
             qconv_unpack = torch.ops.quantized.conv_transpose2d_unpack
